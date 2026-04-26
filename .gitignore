@@ -11,3 +11,6 @@ data/raw/
 
 # OS
 .DS_Store
+
+#models
+models/
