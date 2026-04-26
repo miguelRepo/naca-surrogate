@@ -150,11 +150,30 @@ zl_aoa       = zero_lift_aoa(m, p)
 # ── Key metrics ───────────────────────────────────────────────────────────────
 st.markdown("### Key Performance Metrics")
 c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("Best L/D",          f"{best_ld_val:.1f}")
-c2.metric("AoA at Best L/D",   f"{best_ld_aoa:.1f}°")
-c3.metric("Max Cl",            f"{cl_pred.max():.3f}")
-c4.metric("Min Cd",            f"{cd_pred.min():.4f}")
-c5.metric("Zero-lift AoA",     f"{zl_aoa:.1f}°")
+c1.metric("Best L/D",        f"{best_ld_val:.1f}")
+c2.metric("AoA at Best L/D", f"{best_ld_aoa:.1f}°")
+c3.metric("Max Cl",          f"{cl_pred.max():.3f}")
+c4.metric("Min Cd",          f"{cd_pred.min():.4f}")
+c5.metric("Zero-lift AoA",   f"{zl_aoa:.1f}°")
+
+if has_ref:
+    ref_sorted     = ref.sort_values('aoa').reset_index(drop=True)
+    cl_ref         = ref_sorted['cl'].values
+    cd_ref         = ref_sorted['cd'].values
+    aoa_ref        = ref_sorted['aoa'].values
+
+    cl_pred_interp = np.interp(aoa_ref, aoa_range, cl_pred)
+    cd_pred_interp = np.interp(aoa_ref, aoa_range, cd_pred)
+
+    cl_mask = np.abs(cl_ref) > 0.1
+    cl_mape = np.mean(np.abs(cl_pred_interp[cl_mask] - cl_ref[cl_mask]) / np.abs(cl_ref[cl_mask])) * 100
+    cd_mape = np.mean(np.abs(cd_pred_interp - cd_ref) / np.abs(cd_ref)) * 100
+
+    c1, c2 = st.columns(2)
+    c1.metric("Cl prediction error", f"{cl_mape:.2f}%", 
+              delta="vs XFoil", delta_color="off")
+    c2.metric("Cd prediction error", f"{cd_mape:.2f}%", 
+              delta="vs XFoil", delta_color="off")
 
 # ── Physics annotations ───────────────────────────────────────────────────────
 if m > 0:
@@ -265,10 +284,35 @@ with col4:
 
 # ── Data table ────────────────────────────────────────────────────────────────
 with st.expander("View full prediction table"):
-    results_df = pd.DataFrame({
-        'AoA (°)':         aoa_range,
-        'Cl (predicted)':  cl_pred.round(4),
-        'Cd (predicted)':  cd_pred.round(4),
-        'L/D (predicted)': np.round(ld_pred, 2)
-    })
+    if has_ref:
+        ref_sorted = ref.sort_values('aoa').reset_index(drop=True)
+        aoa_ref = ref_sorted['aoa'].values
+        cl_ref  = ref_sorted['cl'].values
+        cd_ref  = ref_sorted['cd'].values
+        ld_ref  = cl_ref / cd_ref
+
+        # Interpolate predictions to match XFoil AoA points
+        cl_pred_interp = np.interp(aoa_ref, aoa_range, cl_pred)
+        cd_pred_interp = np.interp(aoa_ref, aoa_range, cd_pred)
+        ld_pred_interp = np.interp(aoa_ref, aoa_range, ld_pred)
+
+        results_df = pd.DataFrame({
+            'AoA (°)':          aoa_ref,
+            'Cl surrogate':     cl_pred_interp.round(4),
+            'Cl XFoil':         cl_ref.round(4),
+            'Cl error':         (cl_pred_interp - cl_ref).round(4),
+            'Cd surrogate':     cd_pred_interp.round(4),
+            'Cd XFoil':         cd_ref.round(4),
+            'Cd error':         (cd_pred_interp - cd_ref).round(4),
+            'L/D surrogate':    ld_pred_interp.round(2),
+            'L/D XFoil':        ld_ref.round(2),
+        })
+    else:
+        results_df = pd.DataFrame({
+            'AoA (°)':         aoa_range,
+            'Cl (predicted)':  cl_pred.round(4),
+            'Cd (predicted)':  cd_pred.round(4),
+            'L/D (predicted)': np.round(ld_pred, 2)
+        })
+
     st.dataframe(results_df, use_container_width=True)
