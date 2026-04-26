@@ -117,16 +117,6 @@ naca-surrogate/
 
 ---
 
-## Background
-
-This project was built as part of a career transition from aeronautical 
-engineering into simulation and data science. The domain knowledge from 
-aerospace engineering (NACA airfoil theory, XFoil, boundary layer behavior) 
-combined with machine learning creates a surrogate modeling pipeline — a 
-technique used in real aerospace design optimization.
-
----
-
 ## Author
 
 Miguel — Aeronautical Engineer building simulation and data science tools.  
