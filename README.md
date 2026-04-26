@@ -49,6 +49,22 @@ parameters alone.
 
 ---
 
+## Visualizations
+
+### NACA 2412 — Lift and Drag Curves
+![NACA 2412 Polar](data/naca2412_polar.png)
+
+### Surrogate Model — Predicted vs Actual
+![Predicted vs Actual](data/predicted_vs_actual.png)
+
+### Feature Importance
+![Feature Importance](data/feature_importance.png)
+
+### Isolated Camber Effects
+![Camber Effects](data/isolated_camber_effects.png)
+
+---
+
 ## Key findings
 
 - **Angle of attack** dominates prediction (feature importance: 0.963), 
