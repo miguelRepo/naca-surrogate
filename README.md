@@ -127,6 +127,5 @@ technique used in real aerospace design optimization.
 
 ## Author
 
-Miguel — Aeronautical Engineer & IT Specialist transitioning into 
-simulation engineering and data science.  
+Miguel — Aeronautical Engineer building simulation and data science tools.  
 [GitHub](https://github.com/miguelRepo)
