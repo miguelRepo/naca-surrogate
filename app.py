@@ -2,15 +2,26 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import joblib
+from sklearn.ensemble import RandomForestRegressor
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title="NACA Airfoil Surrogate", layout="wide")
 
 # ── Load model & dataset ─────────────────────────────────────────────────────
 @st.cache_resource
-def load_model():
-    return joblib.load('models/random_forest.pkl')
+def train_model():
+    df = pd.read_csv('data/xfoil_dataset.csv', dtype={'naca': str})
+    df['naca'] = df['naca'].str.zfill(4)
+    df['m'] = df['naca'].str[0].astype(int)
+    df['p'] = df['naca'].str[1].astype(int)
+    df['t'] = df['naca'].str[2:].astype(int)
+    X = df[['m', 'p', 't', 're', 'aoa']]
+    y = df[['cl', 'cd']]
+    rf = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
+    rf.fit(X, y)
+    return rf
+
+model = train_model()
 
 @st.cache_data
 def load_data():
@@ -18,7 +29,6 @@ def load_data():
     df['naca'] = df['naca'].str.zfill(4)
     return df
 
-model = load_model()
 df_ref = load_data()
 
 # ── NACA 4-digit geometry ─────────────────────────────────────────────────────
