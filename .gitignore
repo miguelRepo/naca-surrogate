@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Conda
+.conda/
+
+# Data (raw files can be large)
+data/raw/
+
+# OS
+.DS_Store
