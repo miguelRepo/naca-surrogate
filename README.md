@@ -103,6 +103,7 @@ parameters alone.
 
 ## Project structure
 
+```
 naca-surrogate/
 ├── data/                   ← XFoil dataset (20k rows)
 ├── notebooks/
@@ -112,6 +113,7 @@ naca-surrogate/
 │   └── generate_data.py    ← XFoil data generation script
 ├── app.py                  ← Streamlit app
 └── requirements.txt
+```
 
 ---
 
